@@ -1,4 +1,5 @@
-import 'package:buy_smart/CartProvider.dart';
+
+
 import 'package:buy_smart/LoginPage.dart';
 import 'package:buy_smart/ProductCard.dart';
 import 'package:buy_smart/ProductDetailPage.dart';
@@ -18,18 +19,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context)=>CartProvider(),
-      child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
-        theme: ThemeData(
+    return MaterialApp(
+        debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
+      theme: ThemeData(
 
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        home:  const HomePage()
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
+      home:  const HomePage()
     );
   }
 }

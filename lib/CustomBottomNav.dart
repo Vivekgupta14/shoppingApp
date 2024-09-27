@@ -1,5 +1,8 @@
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'CartPage.dart';
 
 class CustomBottomNav extends StatelessWidget {
   final int selectedIndex;
@@ -14,14 +17,14 @@ class CustomBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
+      items:  <BottomNavigationBarItem>[
+        const BottomNavigationBarItem(
           icon: Center(
             child: Icon(Icons.home, color: Colors.greenAccent),
           ),
           label: 'Home',  // Label is still required but hidden
         ),
-        BottomNavigationBarItem(
+        const BottomNavigationBarItem(
           icon: Center(
             child: Icon(Icons.category, color: Colors.greenAccent),
           ),
@@ -29,17 +32,19 @@ class CustomBottomNav extends StatelessWidget {
         ),
         BottomNavigationBarItem(
           icon: Center(
-            child: Icon(Icons.shopping_cart, color: Colors.greenAccent),
+            child: GestureDetector( onTap:(){ Navigator.push(context,
+              MaterialPageRoute(builder: (context) => CartPage()),
+            );},child: const Icon(Icons.shopping_cart, color: Colors.greenAccent)),
           ),
           label: 'Cart',
         ),
-        BottomNavigationBarItem(
+        const BottomNavigationBarItem(
           icon: Center(
             child: Icon(Icons.favorite, color: Colors.greenAccent),
           ),
           label: 'Favourites',
         ),
-        BottomNavigationBarItem(
+        const BottomNavigationBarItem(
           icon: Center(
             child: Icon(Icons.person, color: Colors.greenAccent),
           ),

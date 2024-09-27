@@ -1,8 +1,10 @@
-import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+
+
 
 import 'CartPage.dart';
+import 'DatabaseHelper.dart';
 import 'api_service.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -18,8 +20,8 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
+  final DatabaseHelper _dbHelper = DatabaseHelper();
   Map productDetails = {};
-  bool isExpanded = false;
   final ApiService apiService = ApiService();
 
   @override
@@ -31,14 +33,30 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Future<void> fetchProductDetails() async {
     try {
       final response = await apiService.fetchProductDetails(widget.productId);
-        setState(() {
-          productDetails = response;
-          print(productDetails);
-        });
+      setState(() {
+        productDetails = response;
+      });
     } catch (e) {
       print('Error: $e');
     }
   }
+
+  Future<void> addToCart() async {
+    Map<String, dynamic> cartItem = {
+      'id': productDetails['id'],
+      'name': productDetails['title'],
+      'price': productDetails['price'],
+      'image':productDetails['image'],
+      'quantity': 1
+    };
+
+    await _dbHelper.addToCart(cartItem);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Product added to cart!')),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -52,44 +70,56 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             ),
             Row(
               children: [
-                GestureDetector(onTap: () {
-                  Navigator.pop(context);
-                },
-                    child:  Container(width: 50,  // Adjust the width and height based on the size you want
+                GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                        width: 50,
                         height: 50,
                         decoration: BoxDecoration(
-                            shape: BoxShape.circle,  // This makes the container circular
+                            shape: BoxShape.circle,
                             color: Colors.grey[200]),
                         child: const Icon(Icons.arrow_back_ios_new))),
                 const Spacer(),
-                Container(width: 50,  // Adjust the width and height based on the size you want
+                Container(
+                    width: 50,
                     height: 50,
                     decoration: BoxDecoration(
-                        shape: BoxShape.circle,  // This makes the container circular
+                        shape: BoxShape.circle,
                         color: Colors.grey[200]),
                     child: const Icon(Icons.favorite, color: Colors.red)),
                 const SizedBox(width: 25),
-                Container(width: 50,  // Adjust the width and height based on the size you want
-                  height: 50,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,  // This makes the container circular
-                      color: Colors.grey[200],),
-                    child: const Icon(Icons.shopping_cart)),
+                GestureDetector(
+                      onTap: () {
+                        Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => CartPage()),
+                        );
+                      },
+                  child: Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.grey[200],
+                      ),
+                      child: const Icon(Icons.shopping_cart)),
+                ),
               ],
             ),
             productDetails.isEmpty
-                ? const Expanded(child: Center(
-                child: CircularProgressIndicator()))
+                ? const Expanded(child: Center(child: CircularProgressIndicator()))
                 : Expanded(
-                  child: Padding(
+              child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                   child: SingleChildScrollView(
-                    child: Column(
-                     crossAxisAlignment: CrossAxisAlignment.start,
-                     children: [
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       const SizedBox(height: 10),
-                      SizedBox(height: 300, child: Center(child: Image.network(
-                          productDetails['image']))),
+                      SizedBox(
+                          height: 300,
+                          child: Center(child: Image.network(productDetails['image']))),
                       const SizedBox(height: 30),
                       Text(
                         productDetails['title'] ?? '',
@@ -97,79 +127,91 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
-                      Row(
-                          children: [
-                            Card(
-                              elevation: 4,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Center(
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.star,
-                                        color: Colors.lightBlueAccent,),
-                                      Text(
-                                        "  4.8",
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(
-                                        "  117 reviews",
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
+                      Row(children: [
+                        Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Center(
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.star,
+                                    color: Colors.lightBlueAccent,
                                   ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10,),
-                            Card(
-                              elevation: 4,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.thumb_up, color: Colors.green,),
-                                    SizedBox(width: 10,),
-                                    Text('94%', style: TextStyle(
+                                  Text(
+                                    "  4.8",
+                                    style: TextStyle(
                                       fontSize: 15,
-                                    ),),
-                                  ],
-                                ),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    "  117 reviews",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(width: 10,),
-                            Card(
-                              elevation: 4,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Center(
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.question_answer,
-                                        color: Colors.grey,),
-                                      const SizedBox(width: 10,),
-                                      Text("8"),
-                                    ],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.thumb_up,
+                                  color: Colors.green,
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  '94%',
+                                  style: TextStyle(
+                                    fontSize: 15,
                                   ),
                                 ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Center(
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.question_answer,
+                                    color: Colors.grey,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text("8"),
+                                ],
                               ),
                             ),
-                          ]
-                      ),
+                          ),
+                        ),
+                      ]),
                       const SizedBox(height: 10),
                       SizedBox(
                         width: 500,
@@ -180,7 +222,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               children: [
                                 Text(
                                   "\$${productDetails['price']}",
-                                  style: const TextStyle(fontSize: 18,
+                                  style: const TextStyle(
+                                      fontSize: 18,
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold),
                                 ),
@@ -188,14 +231,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                   width: 10,
                                 ),
                                 const Text(
-                                  "from 4\$ per month", style: TextStyle(
-                                    color: Colors.grey
-                                ),),
+                                  "from 4\$ per month",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
                                 const SizedBox(
                                   width: 70,
                                 ),
                                 const Icon(
-                                  Icons.info_outline, color: Colors.grey,)
+                                  Icons.info_outline,
+                                  color: Colors.grey,
+                                )
                               ],
                             ),
                           ),
@@ -213,31 +258,32 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 25,),
-                      SizedBox(
-                        width: 500,
-                        child: Card(
-                          color: Colors.lightGreenAccent,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)
-                          ),
-                          child: TextButton(onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                              return  CartPage(productId: widget.productId);
-                            },),);
-                          },
-                              child: const Text('Add to Cart', style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold
+                      const SizedBox(height: 25),
+                      GestureDetector(
+                        onTap: () {
+                          addToCart();
+                        },
+                        child: SizedBox(
+                          width: 500,
+                          height: 50,
+                          child: Card(
+                            color: Colors.lightGreenAccent,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            child: const Center(
+                              child: Text(
+                                'Add to Cart',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold),
                               ),
-                              )),
+                            ),
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 10,),
+                      const SizedBox(height: 10),
                       const Center(child: Text('Delivery on 26 Oct'))
-
-                      // Text(productDetails['description'] ?? ''),
                     ],
                   ),
                 ),

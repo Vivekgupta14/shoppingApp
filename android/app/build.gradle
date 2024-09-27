@@ -52,6 +52,11 @@ android {
         }
     }
 }
+dependencies {
+    implementation platform('com.google.firebase:firebase-bom:33.3.0')  // Firebase BOM
+    implementation 'com.google.firebase:firebase-firestore'  // Cloud Firestore
+    apply plugin: 'com.google.gms.google-services'
+}
 
 flutter {
     source = "../.."
