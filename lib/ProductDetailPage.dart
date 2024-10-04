@@ -1,8 +1,6 @@
 
+import 'package:buy_smart/WishlistPage.dart';
 import 'package:flutter/material.dart';
-
-
-
 import 'CartPage.dart';
 import 'DatabaseHelper.dart';
 import 'api_service.dart';
@@ -53,7 +51,22 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     await _dbHelper.addToCart(cartItem);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Product added to cart!')),
+      const SnackBar(content: Text('Product added to cart!'),duration:Duration(milliseconds: 90) ,),
+    );
+  }
+
+  Future<void> addToWishlist() async {
+    Map<String, dynamic> wishlistItem = {
+      'id': productDetails['id'],
+      'name': productDetails['title'],
+      'price': productDetails['price'],
+      'image':productDetails['image'],
+    };
+
+    await _dbHelper.addToWishlist(wishlistItem);
+    print(wishlistItem);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Product added to wishlist!') ,),
     );
   }
 
@@ -88,7 +101,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.grey[200]),
-                    child: const Icon(Icons.favorite, color: Colors.red)),
+                    child: GestureDetector(onTap:(){
+                      addToWishlist();
+                      print("added to whishlist");
+                    },child: const Icon(Icons.favorite, color: Colors.red))),
                 const SizedBox(width: 25),
                 GestureDetector(
                       onTap: () {

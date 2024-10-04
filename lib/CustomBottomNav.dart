@@ -1,8 +1,10 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'CartPage.dart';
+import 'HomePage.dart';      // Import your HomePage
+
+import 'CartPage.dart';      // Import your CartPage
+import 'WishlistPage.dart';  // Import your WishlistPage
 
 class CustomBottomNav extends StatelessWidget {
   final int selectedIndex;
@@ -14,54 +16,68 @@ class CustomBottomNav extends StatelessWidget {
     required this.onItemTapped,
   });
 
+  void _navigateToPage(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()), // Navigate to HomePage
+        );
+        break;
+      case 2:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => CartPage()), // Navigate to CartPage
+        );
+        break;
+      case 3:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => WishlistPage()), // Navigate to WishlistPage
+        );
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      items:  <BottomNavigationBarItem>[
-        const BottomNavigationBarItem(
-          icon: Center(
-            child: Icon(Icons.home, color: Colors.greenAccent),
-          ),
-          label: 'Home',  // Label is still required but hidden
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home, color: Colors.greenAccent),
+          label: 'Home',
         ),
-        const BottomNavigationBarItem(
-          icon: Center(
-            child: Icon(Icons.category, color: Colors.greenAccent),
-          ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.category, color: Colors.greenAccent),
           label: 'Catalog',
         ),
         BottomNavigationBarItem(
-          icon: Center(
-            child: GestureDetector( onTap:(){ Navigator.push(context,
-              MaterialPageRoute(builder: (context) => CartPage()),
-            );},child: const Icon(Icons.shopping_cart, color: Colors.greenAccent)),
-          ),
+          icon: Icon(Icons.shopping_cart, color: Colors.greenAccent),
           label: 'Cart',
         ),
-        const BottomNavigationBarItem(
-          icon: Center(
-            child: Icon(Icons.favorite, color: Colors.greenAccent),
-          ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.favorite, color: Colors.greenAccent),
           label: 'Favourites',
         ),
-        const BottomNavigationBarItem(
-          icon: Center(
-            child: Icon(Icons.person, color: Colors.greenAccent),
-          ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person, color: Colors.greenAccent),
           label: 'Profile',
         ),
       ],
       currentIndex: selectedIndex,
-      onTap: onItemTapped,
-      showSelectedLabels: false,  // Hide labels
-      showUnselectedLabels: false,  // Hide labels
+      onTap: (index) {
+        _navigateToPage(context, index); // Navigate to the correct page
+        onItemTapped(index); // Update the selected index
+      },
+      showSelectedLabels: false, // Hide labels
+      showUnselectedLabels: false, // Hide labels
       selectedIconTheme: const IconThemeData(
-        size: 30,  // Consistent size for selected icons
+        size: 30, // Consistent size for selected icons
       ),
       unselectedIconTheme: const IconThemeData(
-        size: 30,  // Consistent size for unselected icons
+        size: 30, // Consistent size for unselected icons
       ),
-      type: BottomNavigationBarType.fixed,  // Ensure the type is fixed to avoid shifting
+      type: BottomNavigationBarType.fixed, // Ensure the type is fixed to avoid shifting
     );
   }
 }

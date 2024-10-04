@@ -34,20 +34,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // Future<void> fetchProducts() async {
-  //   try {
-  //     final response = await http.get(Uri.parse('https://fakestoreapi.com/products'));
-  //     if (response.statusCode == 200) {
-  //       setState(() {
-  //         products = json.decode(response.body);
-  //       });
-  //     } else {
-  //       debugPrint('Failed to load products: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error fetching products: $e');
-  //   }
-  // }
   Future<void> fetchProducts() async {
     try {
       final response = await apiService.fetchProducts();
@@ -71,22 +57,6 @@ class _HomePageState extends State<HomePage> {
       print('Error: $e');
     }
   }
-  //
-  // Future<void> fetchCategory() async {
-  //   try {
-  //     final response = await http.get(Uri.parse('https://fakestoreapi.com/products/categories'));
-  //     if (response.statusCode == 200) {
-  //       setState(() {
-  //         productsCategory = json.decode(response.body);
-  //         print('$productsCategory');
-  //       });
-  //     } else {
-  //       debugPrint('Failed to load products: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error fetching products: $e');
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
